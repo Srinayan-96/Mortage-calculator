@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container-about {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem auto;
+            flex: 1;
+        }
+
+        .heading {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .content {
+            color: #34495e;
+            line-height: 1.7;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .features-list {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .features-list li {
+            margin-bottom: 10px;
+            list-style-type: circle;
+        }
+
+        .mission {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-white shadow-[0_4px_9px_rgba(0,0,0,0.3)]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <!-- Logo icon -->
+                        <i class="fas fa-home text-blue-600 text-2xl"></i>
+                        <!-- Brand name -->
+                        <span class="ml-2 text-xl font-bold text-gray-800">Home</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <!-- <a href="#chatbot" class="text-gray-600 hover:text-blue-600 transition-colors">Chatbot</a> -->
+                    <a href="About-Us.html" class="text-gray-600 hover:text-blue-600 transition-colors">About Us</a>
+                    <a href="Contact-Us.html" class="text-gray-600 hover:text-blue-600 transition-colors">Contact Us</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-about">
+        <h1 class="heading">About Us</h1>
+        
+        <p class="content">
+            Welcome to <span class="highlight">Mortgage Mate</span>, your trusted partner in home financing solutions. 
+            We're dedicated to simplifying the mortgage calculation process through innovative tools 
+            and user-friendly interfaces.
+        </p>
+
+        <p class="content">
+            Our mission is to empower home buyers and homeowners with accurate, instant mortgage 
+            calculations that help make informed financial decisions. Whether you're a first-time 
+            buyer or refinancing your existing home, Mortgage Mate provides the clarity you need.
+        </p>
+
+        <ul class="features-list content">
+            <li>Real-time mortgage calculations</li>
+            <li>Multiple loan type support</li>
+            <li>Interactive payment breakdowns</li>
+            <li>Mobile-friendly design</li>
+            <li>Privacy-focused service</li>
+        </ul>
+
+        <div class="mission content">
+            <h2 class="highlight">Our Commitment</h2>
+            <p style="margin-top: 15px;">
+                At Mortgage Mate, we combine cutting-edge technology with financial expertise to 
+                deliver reliable calculations you can trust. Our team of mortgage specialists 
+                and software developers work tirelessly to ensure our calculator stays updated 
+                with the latest market trends and regulations.
+            </p>
+        </div>
+
+        <p class="content" style="margin-top: 25px;">
+            Start your home ownership journey today with Mortgage Mate - where complex calculations 
+            meet simple solutions.
+        </p>
+    </div>
+
+    <footer class="bg-white text-black font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">Mortgage Mate</h2>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">About</h3>
+                    <ul>
+                        <li class="mb-2"><a href="About-Us.html" class="text-black">About us</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Advertise with us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Help</h3>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="text-black">Contact us</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Latest news</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Legal</h3>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="text-black">Privacy policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Cookie Settings</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Do Not Sell or Share My Personal Information</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Consumer Health Information Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Understanding Mortgage Mate’s averages</a></li>
+                        <li class="mb-2"><a href="#" class="text-black">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-center space-x-4">
+                <a href="#" class="text-black"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-black"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-black"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="text-black"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="mt-8 text-center text-black" id="copyright">
+                © 2025 Mortgage Mate, LLC. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

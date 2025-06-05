@@ -1,0 +1,239 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SIP Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 260px;
+            width: 260px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <header class="bg-white shadow-[0_4px_9px_rgba(0,0,0,0.3)]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-home text-blue-600 text-2xl"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-800">Mortgage Mate</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <!-- <a href="#chatbot" class="text-gray-600 hover:text-blue-600 transition-colors">Chatbot</a> -->
+                    <a href="About-Us.html" class="text-gray-600 hover:text-blue-600 transition-colors">About Us</a>
+                    <a href="Contact-Us.html" class="text-gray-600 hover:text-blue-600 transition-colors">Contact Us</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+<div class="container mx-auto p-4">
+    <nav class="text-sm text-gray-500 mb-4">
+        <a class="hover:underline" href="index.html">HOME</a> &gt;
+        <a class="hover:underline" href="Calculator.html">CALCULATORS</a> &gt;
+        <span>SIP CALCULATOR</span>
+    </nav>
+    <h1 class="text-3xl font-bold mb-6">SIP Calculator</h1>
+    <div class="flex flex-col lg:flex-row gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md w-full lg:w-1/2">
+            <h2 class="text-lg font-medium mb-4">Investment Parameters</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="monthlyInvestment">Monthly Investment (₹)</label>
+                <div class="flex items-center border rounded-lg overflow-hidden">
+                    <span class="px-3 text-gray-600">₹</span>
+                    <input class="w-full p-2 border-none focus:ring-0" id="monthlyInvestment" type="number" value="5000" oninput="calculateSIP()"/>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="duration">Investment Duration (Years)</label>
+                <input class="w-full p-2 border rounded-lg" id="duration" type="number" value="10" oninput="calculateSIP()"/>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="returnRate">Expected Annual Return (%)</label>
+                <div class="flex items-center border rounded-lg overflow-hidden">
+                    <input class="w-full p-2 border-none focus:ring-0" id="returnRate" type="number" value="12" oninput="calculateSIP()"/>
+                    <span class="px-3 text-gray-600">%</span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="stepUp">Annual Step-Up (%)</label>
+                <div class="flex items-center border rounded-lg overflow-hidden">
+                    <input class="w-full p-2 border-none focus:ring-0" id="stepUp" type="number" value="10" oninput="calculateSIP()"/>
+                    <span class="px-3 text-gray-600">%</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md w-full lg:w-1/2">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-medium">Investment Summary</h2>
+                <button class="text-gray-500 hover:text-gray-700">
+                    <!-- <i class="fas fa-share"></i> SHARE -->
+                </button>
+            </div>
+            <div class="chart-container">
+                <canvas id="sipChart"></canvas>
+            </div>
+            <div class="flex justify-center mb-4 mt-6 gap-4">
+                <div class="flex items-center">
+                    <span class="w-4 h-4 bg-purple-600 rounded-full inline-block mr-2"></span>
+                    <span>Total Invested</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-4 h-4 bg-green-500 rounded-full inline-block mr-2"></span>
+                    <span>Est. Returns</span>
+                </div>
+            </div>
+            <div class="border-t pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Total Investment</span>
+                    <span id="totalInvestment">₹0.00</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span>Total Returns</span>
+                    <span id="totalReturns">₹0.00</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span>Annual Step-Up</span>
+                    <span id="stepUpValue">0%</span>
+                </div>
+                <div class="flex justify-between font-bold text-lg">
+                    <span>Maturity Value</span>
+                    <span id="maturityValue">₹0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="bg-white text-black font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h2 class="text-2xl font-bold mb-4">Mortgage Mate</h2>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            <div>
+                <h3 class="text-lg font-bold mb-4">About</h3>
+                <ul>
+                    <li class="mb-2"><a href="About-Us.html" class="text-black">About us</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Advertise with us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">Help</h3>
+                <ul>
+                    <li class="mb-2"><a href="Contact-Us.html" class="text-black">Contact us</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Latest news</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">Legal</h3>
+                <ul>
+                    <li class="mb-2"><a href="#" class="text-black">Privacy policy</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Cookie Settings</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Do Not Sell or Share My Personal Information</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Consumer Health Information Privacy Policy</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Understanding Mortgage Mate's averages</a></li>
+                    <li class="mb-2"><a href="#" class="text-black">Terms of use</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-8 flex justify-center space-x-4">
+            <a href="#" class="text-black"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-black"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-black"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="text-black"><i class="fab fa-youtube"></i></a>
+        </div>
+        <div class="mt-8 text-center text-black" id="copyright">
+            © 2025 Mortgage Mate, LLC. All Rights Reserved.
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let sipChart = null;
+
+    function calculateSIP() {
+        const monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value) || 0;
+        const duration = parseFloat(document.getElementById('duration').value) || 0;
+        const returnRate = parseFloat(document.getElementById('returnRate').value) || 0;
+        const stepUp = parseFloat(document.getElementById('stepUp').value) || 0;
+
+        let totalMonths = duration * 12;
+        let monthlyReturn = returnRate / 1200;
+        let totalInvestment = 0;
+        let futureValue = 0;
+        let currentMonthlyInvestment = monthlyInvestment;
+
+        for(let year = 1; year <= duration; year++) {
+            for(let month = 1; month <= 12; month++) {
+                futureValue += currentMonthlyInvestment * Math.pow(1 + monthlyReturn, (totalMonths - ((year - 1) * 12 + month - 1)));
+                totalInvestment += currentMonthlyInvestment;
+            }
+            currentMonthlyInvestment *= (1 + stepUp/100);
+        }
+
+        const totalReturns = futureValue - totalInvestment;
+
+        document.getElementById('totalInvestment').textContent = `₹${totalInvestment.toFixed(2)}`;
+        document.getElementById('totalReturns').textContent = `₹${totalReturns.toFixed(2)}`;
+        document.getElementById('maturityValue').textContent = `₹${futureValue.toFixed(2)}`;
+        document.getElementById('stepUpValue').textContent = `${stepUp}%`;
+
+        updateChart(totalInvestment, totalReturns);
+    }
+
+    function updateChart(invested, returns) {
+        const ctx = document.getElementById('sipChart').getContext('2d');
+        
+        if (sipChart) {
+            sipChart.destroy();
+        }
+
+        sipChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Invested', 'Estimated Returns'],
+                datasets: [{
+                    data: [invested, returns],
+                    backgroundColor: ['#8B5CF6', '#10B981'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 2,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ₹${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', calculateSIP);
+</script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Expert Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .chat-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .chat-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 100%;
+            max-width: 400px;
+            height: 500px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: bottom right;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 998;
+        }
+
+        .chat-container.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            animation: fadeIn 0.3s ease;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .user-message {
+            background: #6e8efb;
+            color: white;
+            align-self: flex-end;
+            border-radius: 18px 18px 0 18px;
+        }
+
+        .bot-message {
+            background: #f0f2f5;
+            color: #333;
+            align-self: flex-start;
+            border-radius: 18px 18px 18px 0;
+        }
+
+        .bot-message ul {
+            padding-left: 20px;
+        }
+
+        .bot-message li {
+            margin-bottom: 5px;
+        }
+
+        .input-container {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            background: white;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            height: 40px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: #f0f2f5;
+            border-radius: 18px;
+            align-self: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #6e8efb;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 3px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message {
+            color: #ff4444;
+            background: #ffeeee;
+            border-left: 4px solid #ff4444;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .mortgage-result {
+            background: #f8f9fa;
+            border-left: 4px solid #6e8efb;
+            padding: 12px;
+            margin: 5px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .voice-button {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .voice-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #6e8efb;
+            transition: all 0.2s ease;
+        }
+
+        .voice-button:hover svg {
+            fill: #a777e3;
+        }
+
+        .voice-button.active {
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .voice-button.active svg {
+            fill: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-icon" id="chatIcon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+        </svg>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <h3>Mortgage Expert</h3>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <p>Hello! I'm your mortgage assistant. Ask me to calculate payments or explain mortgage concepts.</p>
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Ask about mortgages..." autocomplete="off">
+            <button class="voice-button" id="voiceButton" title="Voice input">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2c0 4.08-3.06 7.44-7 7.93V19h4v2H8v-2h4v-3.07z"/>
+                </svg>
+            </button>
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatIcon = document.getElementById('chatIcon');
+        const chatContainer = document.getElementById('chatContainer');
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const voiceButton = document.getElementById('voiceButton');
+
+        // API Configuration
+        const API_CONFIG = {
+            endpoint: "https://openrouter.ai/api/v1/chat/completions",
+            headers: {
+                "Authorization": "Bearer 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",
+                "HTTP-Referer": window.location.href,
+                "X-Title": "Mortgage Expert Chatbot",
+                "Content-Type": "application/json"
+            },
+            model: "deepseek/deepseek-r1:free"
+        };
+
+        // Enhanced conversation history with system prompt
+        let conversationHistory = [
+            {
+                role: "system",
+                content: `You are a helpful mortgage expert assistant. Follow these rules:
+1. Provide clear, concise answers without markdown formatting
+2. Use simple bullet points with • instead of dashes
+3. Never use tables or code blocks
+4. Avoid special characters like *, |, or #
+5. Explain concepts in plain text
+6. Use line breaks for better readability
+7. Keep paragraphs short (2-3 lines maximum)`
+            },
+            {
+                role: "assistant",
+                content: "Hello! I'm your mortgage assistant. I can calculate payments or explain mortgage concepts. How can I help you today?"
+            }
+        ];
+
+        // Initialize speech recognition
+        let recognition = null;
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                voiceButton.classList.add('active');
+            };
+
+            recognition.onend = () => {
+                voiceButton.classList.remove('active');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                addError('Voice recognition error: ' + event.error);
+            };
+        } else {
+            voiceButton.style.display = 'none';
+            addError('Voice recognition is not supported in your browser');
+        }
+
+        // Enhanced Natural Language Processor
+        function extractMortgageDetails(message) {
+            const details = {
+                principal: null,
+                rate: null,
+                years: null,
+                type: detectMortgageType(message)
+            };
+
+            // Enhanced principal extraction logic
+            // 1. Prioritize $ amounts
+            const dollarMatch = message.match(/\$([\d,]+(?:\.\d+)?)\s*(k|thousand|million)?/i);
+            if (dollarMatch) {
+                details.principal = parseFloat(dollarMatch[1].replace(/,/g, ''));
+                const suffix = dollarMatch[2]?.toLowerCase();
+                if (suffix === 'k' || suffix === 'thousand') details.principal *= 1000;
+                if (suffix === 'million') details.principal *= 1000000;
+            }
+
+            // 2. Look for numeric values with unit suffixes
+            if (!details.principal) {
+                const unitMatch = message.match(/(\d[\d,.]*)\s*(k|thousand|million)/i);
+                if (unitMatch) {
+                    details.principal = parseFloat(unitMatch[1].replace(/,/g, ''));
+                    const suffix = unitMatch[2].toLowerCase();
+                    if (suffix === 'k' || suffix === 'thousand') details.principal *= 1000;
+                    if (suffix === 'million') details.principal *= 1000000;
+                }
+            }
+
+            // 3. Find largest numeric value in message
+            if (!details.principal) {
+                const numbers = message.match(/(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+\.\d+|\d+)/g) || [];
+                const parsed = numbers.map(n => parseFloat(n.replace(/,/g, '')));
+                if (parsed.length > 0) details.principal = Math.max(...parsed);
+            }
+
+            // FIXED RATE EXTRACTION LOGIC
+            let rateMatch;
+            // Priority 1: Rates with @ or "at" indicator
+            rateMatch = message.match(/(?:@|at\s+)(\d+\.?\d*)%?/i);
+            // Priority 2: Any percentage value
+            if (!rateMatch) rateMatch = message.match(/(\d+\.?\d*)%/);
+            // Priority 3: Numbers near rate-related terms
+            if (!rateMatch) rateMatch = message.match(/(\d+\.?\d*)(?=\s*(?:percent|rate|apr))/i);
+            
+            details.rate = rateMatch ? parseFloat(rateMatch[1]) : null;
+
+            // Term extraction with year priority
+            const termMatch = message.match(/(\d+)\s*(?:year|yr|y)/i) || message.match(/\b(\d+)\s*-\s*year/i);
+            details.years = termMatch ? parseInt(termMatch[1]) : null;
+
+            // Final validation with realistic rate filtering
+            const allNumbers = message.match(/(\d+\.\d+|\d+)/g) || [];
+            const parsedNumbers = allNumbers.map(Number);
+            
+            if (!details.principal && parsedNumbers.length > 0) {
+                details.principal = Math.max(...parsedNumbers);
+            }
+            if (!details.rate && parsedNumbers.length > 0) {
+                // Filter for realistic interest rates (0.1% - 20%)
+                details.rate = parsedNumbers.find(n => n > 0.1 && n < 20);
+            }
+            if (!details.years && parsedNumbers.length > 0) {
+                details.years = parsedNumbers.find(n => Number.isInteger(n) && n > 0 && n <= 50);
+            }
+
+            return details;
+        }
+
+        function detectMortgageType(message) {
+            const lowerMsg = message.toLowerCase();
+            if (/interest\s*only/i.test(lowerMsg)) return 'Interest Only';
+            if (/adjustable|arm|variable/i.test(lowerMsg)) return 'Adjustable Rate (ARM)';
+            if (/fixed|standard/i.test(lowerMsg)) return 'Fixed Rate';
+            return 'Fixed Rate'; // Default assumption
+        }
+
+        // Enhanced Calculation Handler
+        function handleMortgageQuery(message) {
+            const details = extractMortgageDetails(message);
+            
+            // Dynamic error messages
+            const missing = [];
+            if (!details.principal) missing.push('loan amount');
+            if (!details.rate) missing.push('interest rate');
+            if (!details.years) missing.push('loan term');
+
+            if (missing.length > 0) {
+                return `Please provide:\n${missing.map(m => `• ${m.charAt(0).toUpperCase() + m.slice(1)}`).join('\n')}\n\n` +
+                       `Example: "Calculate ${details.years || '30'}-year ${details.type.toLowerCase()} mortgage ` +
+                       `for $${details.principal?.toLocaleString() || '400,000'} at ${details.rate || '3.75'}%"`;
+            }
+
+            const result = calculateMortgage(details);
+            const interestPercentage = ((result.totalInterest / details.principal) * 100).toFixed(1);
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'mortgage-result';
+            
+            let resultText = `${result.type.toUpperCase()} MORTGAGE\n\n` +
+                             `Loan Amount: $${details.principal.toLocaleString()}\n` +
+                             `Interest Rate: ${details.rate}%\n` +
+                             `Loan Term: ${details.years} years\n\n` +
+                             `Monthly Payment: $${result.monthlyPayment.toLocaleString(undefined, {
+                                 minimumFractionDigits: 2,
+                                 maximumFractionDigits: 2
+                             })}`;
+
+            if (result.adjustmentNotice) {
+                resultText += `\n\nNote: ${result.adjustmentNotice}`;
+            } else {
+                resultText += `\n\nTotal Payments: $${result.totalPayments.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}\n` +
+                              `Total Interest: $${result.totalInterest.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2
+                              })}\n` +
+                              `Interest Percentage: ${interestPercentage}% of loan amount`;
+            }
+
+            resultDiv.textContent = resultText;
+            chatMessages.insertBefore(resultDiv, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return `Here's your ${result.type.toLowerCase()} mortgage calculation:`;
+        }
+
+        // Enhanced Mortgage Calculator
+        function calculateMortgage(details) {
+            const principal = details.principal;
+            const monthlyRate = details.rate / 100 / 12;
+            const payments = details.years * 12;
+            
+            let calculation = {
+                type: details.type,
+                monthlyPayment: 0,
+                totalPayments: 0,
+                totalInterest: 0
+            };
+
+            if (calculation.type === 'Interest Only') {
+                calculation.monthlyPayment = principal * monthlyRate;
+                calculation.totalPayments = calculation.monthlyPayment * payments;
+                calculation.totalInterest = calculation.totalPayments;
+            } else if (calculation.type === 'Adjustable Rate (ARM)') {
+                // ARM calculation (5/1 example)
+                const fixedPeriod = 5;
+                const armRate = monthlyRate * 1.25; // Example rate adjustment
+                const fixedPayment = principal * monthlyRate / 
+                                  (1 - Math.pow(1 + monthlyRate, -fixedPeriod * 12));
+                const adjPayment = principal * armRate / 
+                                 (1 - Math.pow(1 + armRate, -(details.years - fixedPeriod) * 12));
+                
+                calculation.monthlyPayment = fixedPayment;
+                calculation.totalPayments = (fixedPayment * fixedPeriod * 12) + 
+                                          (adjPayment * (details.years - fixedPeriod) * 12);
+                calculation.adjustmentNotice = `Rate adjusts after ${fixedPeriod} years (Initial: ${details.rate}%, Adjusted: ${(armRate * 12 * 100).toFixed(2)}%)`;
+            } else { // Fixed Rate
+                const monthlyPayment = principal * monthlyRate / 
+                                     (1 - Math.pow(1 + monthlyRate, -payments));
+                calculation.monthlyPayment = monthlyPayment;
+                calculation.totalPayments = monthlyPayment * payments;
+            }
+
+            calculation.totalInterest = calculation.totalPayments - principal;
+            return calculation;
+        }
+
+        // Check for greetings
+        function isGreeting(message) {
+            return /hello|hi|hey|good morning|good afternoon|greetings|what's up|howdy/i.test(message);
+        }
+
+        // Updated mortgage query detection
+        function isMortgageQuery(message) {
+            return /(mortgage|loan|payment|calculate|refinance|arm|fixed|adjustable|interest\s*only)/i.test(message);
+        }
+
+        // Add message to chat with cleaned formatting
+        function addMessage(content, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            // Clean and format the response
+            let cleanContent = content
+                .replace(/\*\*/g, '')       // Remove bold markers
+                .replace(/#{1,3}/g, '')     // Remove headers
+                .replace(/\|/g, '')         // Remove table pipes
+                .replace(/- /g, '\n• ')     // Convert dashes to bullets
+                .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+                .replace(/(\d+)%/g, '$1%')  // Clean percentage formatting
+                .replace(/\$\s?(\d)/g, '$$$1'); // Fix currency formatting
+
+            messageDiv.textContent = cleanContent;
+            chatMessages.insertBefore(messageDiv, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add error message
+        function addError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            chatMessages.insertBefore(errorDiv, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Toggle chat visibility
+        function toggleChat() {
+            chatContainer.classList.toggle('active');
+            if (chatContainer.classList.contains('active')) {
+                userInput.focus();
+            }
+        }
+
+        // Send message to API
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            conversationHistory.push({ role: "user", content: message });
+
+            userInput.value = '';
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            voiceButton.disabled = true;
+            
+            // Show typing indicator
+            typingIndicator.style.display = 'flex';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                let botResponse;
+                
+                // Handle greetings
+                if (isGreeting(message)) {
+                    botResponse = "Hello! I'm your mortgage expert assistant. I can help with:\n• Payment calculations\n• Rate comparisons\n• Mortgage advice\n\nWhat would you like to know?";
+                }
+                // Handle mortgage calculations
+                else if (isMortgageQuery(message)) {
+                    botResponse = handleMortgageQuery(message);
+                }
+                // Handle other queries
+                else {
+                    const response = await fetch(API_CONFIG.endpoint, {
+                        method: "POST",
+                        headers: API_CONFIG.headers,
+                        body: JSON.stringify({
+                            "model": API_CONFIG.model,
+                            "messages": conversationHistory
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.error?.message || `API error: ${response.status}`);
+                    botResponse = data.choices[0]?.message?.content || "I didn't understand that. Could you rephrase your question?";
+                }
+
+                if (typeof botResponse === 'string') {
+                    addMessage(botResponse, false);
+                    conversationHistory.push({ role: "assistant", content: botResponse });
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                addError(`Error: ${error.message}`);
+            } finally {
+                typingIndicator.style.display = 'none';
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                voiceButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // Initialize chat
+        function initChat() {
+            // Event listeners
+            chatIcon.addEventListener('click', toggleChat);
+            sendButton.addEventListener('click', sendMessage);
+            voiceButton.addEventListener('click', () => {
+                if (recognition) {
+                    try {
+                        recognition.start();
+                    } catch (error) {
+                        addError('Error starting voice recognition: ' + error.message);
+                    }
+                }
+            });
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        // Initialize the chat when page loads
+        window.onload = initChat;
+    </script>
+</body>
+</html>
